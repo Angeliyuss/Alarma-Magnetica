@@ -117,7 +117,5 @@ Alarma-Magnetica/
 │   ├── planos.pdf
 │   └── renders/
 ├── testing/
-│   └── protocolo_pruebas.pdf
-└── docs/
-    └── reporte_final.pdf
+    └── protocolo_pruebas.pdf
 ```
