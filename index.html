@@ -19,6 +19,10 @@
   .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite; }
   @keyframes pulse { 50% { opacity: 0.4; } }
 
+  /* Botón cambiar vista */
+  .nav-btn { background: var(--accent-soft); border: 1px solid var(--accent); color: var(--accent); padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-family: inherit; font-weight: 600; }
+  .nav-btn:hover { filter: brightness(1.2); }
+
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 26px; }
   .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
   .stat .num { font-size: 32px; font-weight: 700; letter-spacing: -1px; }
@@ -29,13 +33,11 @@
   .card h2 { font-size: 15px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .card h2 .tag { font-size: 11px; color: var(--muted); font-weight: 400; margin-left: auto; }
 
-  /* Selector de dia */
   .dia-selector { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; align-items: center; }
   .dia-btn { background: var(--panel-2); border: 1px solid var(--line); color: var(--muted); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-family: inherit; }
   .dia-btn.active { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
   select { background: var(--panel-2); border: 1px solid var(--line); color: var(--text); padding: 8px 12px; border-radius: 8px; font-size: 13px; font-family: inherit; cursor: pointer; margin-left: auto; }
 
-  /* Grafico */
   .chart { display: flex; align-items: flex-end; gap: 3px; height: 200px; padding-top: 10px; }
   .col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; cursor: pointer; }
   .bar { width: 100%; background: var(--bar); border-radius: 4px 4px 0 0; min-height: 2px; transition: height 0.5s cubic-bezier(.2,.8,.2,1), background 0.2s; position: relative; }
@@ -57,35 +59,62 @@
 
   .loading, .empty { text-align: center; color: var(--muted); padding: 40px; font-size: 14px; }
   footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--line); }
+
+  .hidden { display: none; }
+  .hist-buscar { background: var(--panel-2); border: 1px solid var(--line); color: var(--text); padding: 10px 14px; border-radius: 8px; font-size: 14px; font-family: inherit; width: 100%; margin-bottom: 16px; }
 </style>
 </head>
 <body>
-  <header>
-    <h1>Panel de <span>Alarma</span></h1>
-    <div class="estado"><span class="dot"></span> Datos en vivo desde Google Sheets</div>
-  </header>
 
-  <div class="stats">
-    <div class="stat"><div class="num" id="totalDia">–</div><div class="lbl">Aperturas del día</div></div>
-    <div class="stat"><div class="num" id="totalGeneral">–</div><div class="lbl">Total histórico</div></div>
-    <div class="stat peak"><div class="num" id="horaPeak">–</div><div class="lbl">Hora más activa del día</div></div>
-    <div class="stat"><div class="num" id="ultima">–</div><div class="lbl">Última apertura</div></div>
-  </div>
+  <!-- ===================== VISTA PANEL ===================== -->
+  <div id="vistaPanel">
+    <header>
+      <h1>Panel de <span>Alarma</span></h1>
+      <button class="nav-btn" onclick="mostrarHistorico()">📋 Registro histórico</button>
+    </header>
 
-  <div class="card">
-    <h2>Aperturas por hora <span class="tag" id="tagDia">—</span></h2>
-    <div class="dia-selector" id="diaSelector"></div>
-    <div class="chart" id="chart"><div class="loading">Cargando datos…</div></div>
-    <p style="font-size:12px;color:var(--muted);margin-top:12px;">Toca una barra para ver los registros de esa hora.</p>
-  </div>
-
-  <div class="card">
-    <h2>Registros <span class="tag" id="tagTabla">—</span></h2>
-    <div class="filtro-aviso" id="filtroAviso">
-      <span id="filtroTexto"></span>
-      <button onclick="quitarFiltroHora()">Ver todas las horas ✕</button>
+    <div class="stats">
+      <div class="stat"><div class="num" id="totalDia">–</div><div class="lbl">Aperturas del día</div></div>
+      <div class="stat"><div class="num" id="totalGeneral">–</div><div class="lbl">Total histórico</div></div>
+      <div class="stat peak"><div class="num" id="horaPeak">–</div><div class="lbl">Hora más activa del día</div></div>
+      <div class="stat"><div class="num" id="ultima">–</div><div class="lbl">Última apertura</div></div>
     </div>
-    <div id="tablaContenedor"><div class="loading">Cargando…</div></div>
+
+    <div class="card">
+      <h2>Aperturas por hora <span class="tag" id="tagDia">—</span></h2>
+      <div class="dia-selector" id="diaSelector"></div>
+      <div class="chart" id="chart"><div class="loading">Cargando datos…</div></div>
+      <p style="font-size:12px;color:var(--muted);margin-top:12px;">Toca una barra para ver los registros de esa hora.</p>
+    </div>
+
+    <div class="card">
+      <h2>Registros <span class="tag" id="tagTabla">—</span></h2>
+      <div class="filtro-aviso" id="filtroAviso">
+        <span id="filtroTexto"></span>
+        <button onclick="quitarFiltroHora()">Ver todas las horas ✕</button>
+      </div>
+      <div id="tablaContenedor"><div class="loading">Cargando…</div></div>
+    </div>
+  </div>
+
+  <!-- ===================== VISTA HISTÓRICO ===================== -->
+  <div id="vistaHistorico" class="hidden">
+    <header>
+      <h1>Registro <span>Histórico</span></h1>
+      <button class="nav-btn" onclick="mostrarPanel()">← Volver al panel</button>
+    </header>
+
+    <div class="stats">
+      <div class="stat"><div class="num" id="histTotal">–</div><div class="lbl">Total de aperturas</div></div>
+      <div class="stat"><div class="num" id="histDias">–</div><div class="lbl">Días con registros</div></div>
+      <div class="stat"><div class="num" id="histPrimera">–</div><div class="lbl">Primer registro</div></div>
+    </div>
+
+    <div class="card">
+      <h2>Todas las aperturas registradas</h2>
+      <input type="text" class="hist-buscar" id="histBuscar" placeholder="Buscar por fecha u hora (ej. 24/06 o 15:)" oninput="renderHistorico()">
+      <div id="histContenedor"><div class="loading">Cargando…</div></div>
+    </div>
   </div>
 
   <footer>Sistema de alarma antirrobo · ESP32-S3 · Actualiza solo cada 30 s</footer>
@@ -97,8 +126,8 @@
   const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 
   let registros = [];
-  let diaSel = null;      // 'YYYY-MM-DD' seleccionado
-  let horaFiltro = null;  // hora seleccionada en el gráfico (0-23) o null
+  let diaSel = null;
+  let horaFiltro = null;
 
   function tsAEvento(tsSeg) {
     const d = new Date((tsSeg + OFFSET_CHILE) * 1000);
@@ -106,29 +135,40 @@
       horaNum: d.getUTCHours(),
       hora: String(d.getUTCHours()).padStart(2,'0')+":"+String(d.getUTCMinutes()).padStart(2,'0')+":"+String(d.getUTCSeconds()).padStart(2,'0'),
       fecha: String(d.getUTCDate()).padStart(2,'0')+"/"+String(d.getUTCMonth()+1).padStart(2,'0')+"/"+d.getUTCFullYear(),
-      diaStr: d.getUTCFullYear()+"-"+String(d.getUTCMonth()+1).padStart(2,'0')+"-"+String(d.getUTCDate()).padStart(2,'0'),
-      diaSemana: d.getUTCDay(), dd: d.getUTCDate(), mm: d.getUTCMonth()
+      diaStr: d.getUTCFullYear()+"-"+String(d.getUTCMonth()+1).padStart(2,'0')+"-"+String(d.getUTCDate()).padStart(2,'0')
     };
   }
   function hoyStr() {
     const d = new Date((Math.floor(Date.now()/1000)+OFFSET_CHILE)*1000);
     return d.getUTCFullYear()+"-"+String(d.getUTCMonth()+1).padStart(2,'0')+"-"+String(d.getUTCDate()).padStart(2,'0');
   }
+  function offDia(dias) {
+    const d = new Date((Math.floor(Date.now()/1000)+OFFSET_CHILE-dias*86400)*1000);
+    return d.getUTCFullYear()+"-"+String(d.getUTCMonth()+1).padStart(2,'0')+"-"+String(d.getUTCDate()).padStart(2,'0');
+  }
   function etiquetaDia(diaStr) {
-    const hoy = hoyStr();
-    const ayer = new Date((Math.floor(Date.now()/1000)+OFFSET_CHILE-86400)*1000);
-    const ayerStr = ayer.getUTCFullYear()+"-"+String(ayer.getUTCMonth()+1).padStart(2,'0')+"-"+String(ayer.getUTCDate()).padStart(2,'0');
-    const antier = new Date((Math.floor(Date.now()/1000)+OFFSET_CHILE-172800)*1000);
-    const antierStr = antier.getUTCFullYear()+"-"+String(antier.getUTCMonth()+1).padStart(2,'0')+"-"+String(antier.getUTCDate()).padStart(2,'0');
-    if (diaStr === hoy) return "Hoy";
-    if (diaStr === ayerStr) return "Ayer";
-    if (diaStr === antierStr) return "Antier";
+    if (diaStr === hoyStr()) return "Hoy";
+    if (diaStr === offDia(1)) return "Ayer";
+    if (diaStr === offDia(2)) return "Antier";
     return null;
   }
   function fechaBonita(diaStr) {
     const p = diaStr.split('-');
     const d = new Date(Date.UTC(+p[0], +p[1]-1, +p[2]));
     return DIAS_SEM[d.getUTCDay()]+" "+(+p[2])+" "+MESES[+p[1]-1];
+  }
+
+  // ----- Cambio de vistas -----
+  function mostrarHistorico() {
+    document.getElementById('vistaPanel').classList.add('hidden');
+    document.getElementById('vistaHistorico').classList.remove('hidden');
+    renderHistorico();
+    window.scrollTo(0,0);
+  }
+  function mostrarPanel() {
+    document.getElementById('vistaHistorico').classList.add('hidden');
+    document.getElementById('vistaPanel').classList.remove('hidden');
+    window.scrollTo(0,0);
   }
 
   async function cargar() {
@@ -138,6 +178,7 @@
       registros = data.map(f => { const ts = parseInt(f[2]); return { ts, ...tsAEvento(ts) }; }).filter(r => !isNaN(r.ts));
       if (diaSel === null) diaSel = hoyStr();
       render();
+      if (!document.getElementById('vistaHistorico').classList.contains('hidden')) renderHistorico();
     } catch (e) {
       document.getElementById('chart').innerHTML = '<div class="empty">No se pudieron cargar los datos.</div>';
       document.getElementById('tablaContenedor').innerHTML = '<div class="empty">Sin conexión a los datos.</div>';
@@ -146,24 +187,22 @@
 
   function diasDisponibles() {
     const set = [...new Set(registros.map(r => r.diaStr))];
-    set.sort((a,b) => b.localeCompare(a)); // más reciente primero
+    set.sort((a,b) => b.localeCompare(a));
     return set;
   }
-
   function seleccionarDia(d) { diaSel = d; horaFiltro = null; render(); }
   function quitarFiltroHora() { horaFiltro = null; render(); }
+  function filtrarHora(h) { horaFiltro = (horaFiltro === h ? null : h); render(); }
 
   function render() {
     if (diaSel === null) diaSel = hoyStr();
     const delDia = registros.filter(r => r.diaStr === diaSel);
 
-    // Stats
     document.getElementById('totalDia').textContent = delDia.length;
     document.getElementById('totalGeneral').textContent = registros.length;
     const etq = etiquetaDia(diaSel);
     document.getElementById('tagDia').textContent = (etq ? etq+" · " : "") + fechaBonita(diaSel);
 
-    // Conteo por hora SOLO del día seleccionado
     const porHora = new Array(24).fill(0);
     delDia.forEach(r => porHora[r.horaNum]++);
     const maxCount = Math.max(...porHora, 1);
@@ -175,28 +214,18 @@
       document.getElementById('ultima').textContent = ult.hora.slice(0,5);
     }
 
-    // Botones de día (rápidos + desplegable)
     const dias = diasDisponibles();
     let sel = '';
-    const rapidos = [['Hoy',hoyStr()]];
-    const ayer = new Date((Math.floor(Date.now()/1000)+OFFSET_CHILE-86400)*1000);
-    const ayerStr = ayer.getUTCFullYear()+"-"+String(ayer.getUTCMonth()+1).padStart(2,'0')+"-"+String(ayer.getUTCDate()).padStart(2,'0');
-    const antier = new Date((Math.floor(Date.now()/1000)+OFFSET_CHILE-172800)*1000);
-    const antierStr = antier.getUTCFullYear()+"-"+String(antier.getUTCMonth()+1).padStart(2,'0')+"-"+String(antier.getUTCDate()).padStart(2,'0');
-    rapidos.push(['Ayer',ayerStr]); rapidos.push(['Antier',antierStr]);
-    rapidos.forEach(([lbl,d]) => {
+    [['Hoy',hoyStr()],['Ayer',offDia(1)],['Antier',offDia(2)]].forEach(([lbl,d]) => {
       sel += `<button class="dia-btn ${diaSel===d?'active':''}" onclick="seleccionarDia('${d}')">${lbl}</button>`;
     });
-    // desplegable con todas las fechas
     sel += `<select onchange="seleccionarDia(this.value)">`;
-    sel += `<option disabled ${dias.includes(diaSel)&&!['Hoy','Ayer','Antier'].includes(etiquetaDia(diaSel))?'':''}>Todas las fechas…</option>`;
     dias.forEach(d => {
       sel += `<option value="${d}" ${d===diaSel?'selected':''}>${fechaBonita(d)} (${registros.filter(r=>r.diaStr===d).length})</option>`;
     });
     sel += `</select>`;
     document.getElementById('diaSelector').innerHTML = sel;
 
-    // Gráfico del día
     let chart = '';
     if (!delDia.length) {
       chart = '<div class="empty" style="width:100%">Sin aperturas este día.</div>';
@@ -211,11 +240,8 @@
       }
     }
     document.getElementById('chart').innerHTML = chart;
-
     renderTabla(delDia);
   }
-
-  function filtrarHora(h) { horaFiltro = (horaFiltro === h ? null : h); render(); }
 
   function renderTabla(delDia) {
     let lista = delDia.slice();
@@ -223,24 +249,42 @@
     if (horaFiltro !== null) {
       lista = lista.filter(r => r.horaNum === horaFiltro);
       aviso.style.display = 'flex';
-      document.getElementById('filtroTexto').textContent =
-        `Mostrando solo las ${String(horaFiltro).padStart(2,'0')}:00 hrs — ${lista.length} aperturas`;
-    } else {
-      aviso.style.display = 'none';
-    }
+      document.getElementById('filtroTexto').textContent = `Mostrando solo las ${String(horaFiltro).padStart(2,'0')}:00 hrs — ${lista.length} aperturas`;
+    } else { aviso.style.display = 'none'; }
     document.getElementById('tagTabla').textContent = fechaBonita(diaSel);
 
     lista.sort((a,b) => b.ts - a.ts);
-    if (!lista.length) {
-      document.getElementById('tablaContenedor').innerHTML = '<div class="empty">Sin aperturas para mostrar.</div>';
-      return;
-    }
+    if (!lista.length) { document.getElementById('tablaContenedor').innerHTML = '<div class="empty">Sin aperturas para mostrar.</div>'; return; }
     let html = '<table><thead><tr><th>#</th><th>Hora</th></tr></thead><tbody>';
-    lista.forEach((r,i) => {
-      html += `<tr><td><span class="num-badge">${lista.length-i}</span></td><td>${r.hora}</td></tr>`;
-    });
+    lista.forEach((r,i) => { html += `<tr><td><span class="num-badge">${lista.length-i}</span></td><td>${r.hora}</td></tr>`; });
     html += '</tbody></table>';
     document.getElementById('tablaContenedor').innerHTML = html;
+  }
+
+  // ----- Vista histórico completo -----
+  function renderHistorico() {
+    const total = registros.length;
+    document.getElementById('histTotal').textContent = total;
+    document.getElementById('histDias').textContent = diasDisponibles().length;
+    if (total) {
+      const prim = registros.reduce((a,b) => a.ts < b.ts ? a : b);
+      document.getElementById('histPrimera').textContent = prim.fecha;
+    }
+
+    const q = (document.getElementById('histBuscar').value || '').toLowerCase().trim();
+    let lista = registros.slice().sort((a,b) => b.ts - a.ts);
+    if (q) lista = lista.filter(r => (r.fecha+" "+r.hora).toLowerCase().includes(q));
+
+    if (!lista.length) {
+      document.getElementById('histContenedor').innerHTML = '<div class="empty">Sin registros que coincidan.</div>';
+      return;
+    }
+    let html = '<table><thead><tr><th>#</th><th>Fecha</th><th>Hora</th></tr></thead><tbody>';
+    lista.forEach((r,i) => {
+      html += `<tr><td><span class="num-badge">${lista.length-i}</span></td><td>${r.fecha}</td><td>${r.hora}</td></tr>`;
+    });
+    html += '</tbody></table>';
+    document.getElementById('histContenedor').innerHTML = html;
   }
 
   cargar();
