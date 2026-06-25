@@ -1,0 +1,21 @@
+// ===== Google Apps Script - Backend del registro de aperturas =====
+// Este script se pega en Extensiones > Apps Script de la planilla de Google Sheets.
+// Recibe los datos del ESP32 (cuando vienen parametros) y los guarda;
+// y entrega todo el historico en JSON cuando el dashboard lo pide (sin parametros).
+
+function doGet(e) {
+  var hoja = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+
+  // Si viene con parametro fecha = el ESP32 esta GUARDANDO un dato
+  if (e.parameter.fecha) {
+    hoja.appendRow([e.parameter.fecha, e.parameter.hora, e.parameter.timestamp]);
+    return ContentService.createTextOutput("OK");
+  }
+
+  // Si NO viene parametro = el dashboard esta PIDIENDO los datos
+  var datos = hoja.getDataRange().getValues();
+  datos.shift(); // quita la fila de titulos
+  var salida = JSON.stringify(datos);
+  return ContentService.createTextOutput(salida)
+         .setMimeType(ContentService.MimeType.JSON);
+}
