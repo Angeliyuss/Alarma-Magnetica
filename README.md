@@ -1,7 +1,7 @@
 # Sistema de Alarma Magnética Antirrobo IoT
 
 Sistema IoT que detecta la apertura no autorizada de un acceso (puerta, cajón,
-gabinete o ventanas) mediante un sensor magnético, emite una alarma sonora y visual,
+gabinete o vitrina) mediante un sensor magnético, emite una alarma sonora y visual,
 y registra cada apertura con fecha y hora en la nube para su posterior análisis.
 
 ---
@@ -49,7 +49,17 @@ del día ocurren más aperturas) para tomar decisiones de seguridad.
 - Protoboard y cables dupont
 - Imán
 
-(Ver detalle de costos en `hardware/BOM.xlsx`)
+(Ver detalle de costos en `hardware/BOM.md`)
+
+---
+
+## Esquemático del circuito
+
+Diagrama de conexiones completo (simulable en vivo):
+**https://wokwi.com/projects/467764354317212673**
+
+El esquemático muestra el ESP32-S3 conectado al sensor magnético (GPIO4), el buzzer
+(GPIO5), el switch de armado (GPIO6) y el LED RGB (GPIO7/8/9).
 
 ---
 
@@ -100,8 +110,8 @@ Alarma-Magnetica/
 │   ├── alarma_antirrobo.ino
 │   └── google_apps_script.js
 ├── hardware/
-│   ├── esquematico.pdf
-│   └── BOM.xlsx
+│   ├── BOM.md              # Lista de materiales con costos
+│   └── esquematico.pdf
 ├── diseno-3d/
 │   ├── encapsulado.f3d
 │   ├── planos.pdf
