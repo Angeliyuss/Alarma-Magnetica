@@ -28,7 +28,7 @@ respondiendo al problema de registrar y analizar accesos no autorizados.
 **Criterio de éxito:** Al separar el imán, el LED cambia a rojo y el buzzer suena.
 Al volver a acercar el imán, el buzzer se detiene y el LED vuelve a verde.
 
-**Resultado:** ✅ Cumplido. El sistema responde de forma inmediata.
+**Resultado:** Cumplido. El sistema responde de forma inmediata.
 
 **Falla detectada y solución:** En las primeras pruebas, la lógica estaba invertida
 (el buzzer sonaba con el imán presente). Se identificó que el módulo KY-025 entregaba
@@ -50,7 +50,7 @@ la señal digital invertida y se corrigió en el firmware mediante el parámetro
 
 **Criterio de éxito:** La hora mostrada coincide con la hora local de Santiago (UTC-4).
 
-**Resultado:** ✅ Cumplido tras corrección.
+**Resultado:** Cumplido tras corrección.
 
 **Falla detectada y solución:** Inicialmente la hora aparecía adelantada y, en otros
 intentos, el ESP no lograba sincronizar (se quedaba en "Sincronizando hora..."). Se
@@ -75,7 +75,7 @@ servidores NTP de respaldo y se aplicó el offset de Chile (UTC-4) de forma manu
 **Criterio de éxito:** Cada apertura genera una fila con fecha, hora y timestamp;
 los datos permanecen tras reiniciar el dispositivo.
 
-**Resultado:** ✅ Cumplido. Los datos persisten en la nube.
+**Resultado:** Cumplido. Los datos persisten en la nube.
 
 **Falla detectada y solución:** Al registrar aperturas, la alarma se congelaba 2-3
 segundos porque el envío a Google bloqueaba el programa. Se resolvió moviendo el
@@ -100,7 +100,7 @@ confirmó que al recuperar la conexión los envíos vuelven a completarse con c�
 **Criterio de éxito:** El dashboard muestra el histórico, identifica la hora con más
 aperturas y se actualiza con los datos nuevos.
 
-**Resultado:** ✅ Cumplido.
+**Resultado:** Cumplido.
 
 ---
 
