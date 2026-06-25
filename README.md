@@ -1,7 +1,7 @@
 # Sistema de Alarma Magnética Antirrobo IoT
 
 Sistema IoT que detecta la apertura no autorizada de un acceso (puerta, cajón,
-gabinete o vitrina) mediante un sensor magnético, emite una alarma sonora y visual,
+gabinete o ventanas) mediante un sensor magnético, emite una alarma sonora y visual,
 y registra cada apertura con fecha y hora en la nube para su posterior análisis.
 
 ---
