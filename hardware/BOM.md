@@ -1,8 +1,8 @@
 # BOM — Lista de Materiales
 
-**Proyecto:** Sistema de Alarma Magnética Antirrobo IoT
-**TEI201 — Avance #3 · UAI**
-*Precios de referencia del mercado chileno (MercadoLibre, AV Electronics) a junio 2026*
+**Proyecto:** Sistema de Alarma Magnética IoT
+**TEI201 — Avance #3 
+*Precios de referencia
 
 | N° | Componente | Cantidad | Costo total (CLP) |
 |----|------------|:--------:|------------------:|
@@ -18,4 +18,4 @@
 | 10 | Imán de neodimio | 1 | $800 |
 | | **COSTO TOTAL** | | **$30.500** |
 
-> Nota: Precios referenciales; pueden variar según proveedor y disponibilidad.
+
