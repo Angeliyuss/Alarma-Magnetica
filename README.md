@@ -62,6 +62,22 @@ El esquemático muestra el ESP32-S3 conectado al sensor magnético (GPIO4), el b
 (GPIO5), el switch de armado (GPIO6) y el LED RGB (GPIO7/8/9).
 
 ---
+## Autonomía y consumo energético
+
+El sistema se alimenta con una batería Panasonic NCR18650B (3400 mAh, 3.7V)
+mediante un Battery Shield que eleva el voltaje a 5V.
+
+| Estado | Consumo aprox. | Autonomía estimada |
+|--------|---------------|--------------------|
+| Operación normal (sin alarma) | ~140 mA | ~20 horas |
+| Alarma activa (buzzer + LED rojo) | ~170 mA | ~17 horas |
+
+El cálculo considera una eficiencia del 85% en la conversión de voltaje del
+Battery Shield. Como la alarma solo suena al detectar una apertura, la
+autonomía real en uso normal se acerca a las 20 horas.
+
+**Fórmula:** Autonomía = (Capacidad batería ÷ Consumo) × Eficiencia del convertidor
+---
 
 ## Instrucciones de instalación
 
